@@ -1,0 +1,304 @@
+ws://host_name:port/ws/room/<room_uuid>/?token=<token>
+
+Teacher
+- connect
+- training_start
+- training_close
+- round_new
+- message_send
+- message_select
+- student_kick
+
+Student
+- connect
+- student_ready
+- message_send
+
+connect:
+  description: Подключение к вебсокету.
+  parameters:
+    - name: Token
+      in: header
+      required: true
+      schema:
+        type: string
+    - name: Room_id:
+       in: header
+       required: True
+       schema:
+         type: integer
+  response_to_room:
+    {
+      action: 'user_list'
+    }
+  response_to_user:
+    {
+      action: 'room_info'
+    }
+    
+
+training_start:
+  description: Запуск тренинга. В результате, у всех студентов должна запуститься проверка готовности.
+  parameters:
+    - name: Token
+      in: header
+      description: 'room id'
+      required: true
+      schema:
+        type: string
+    - name: Room_id:
+       in: header
+       required: True
+       schema:
+         type: integer
+  data:
+    {
+      action: 'training_start'
+    }
+  response_to_room:
+    {
+      action: 'training_start'
+    }
+    
+training_close:
+  description: Окончание тренинга.
+  parameters:
+    - name: Token
+      in: header
+      description: 'room id'
+      required: true
+      schema:
+        type: string
+    - name: Room_id:
+       in: header
+       required: True
+       schema:
+         type: integer
+  data:
+    {
+      action: 'training_close'
+    }
+  response_to_room:
+    {
+     result:
+       type: array
+       items:
+         type: object
+         properties:
+           nickname:
+             type: string
+           correct_answers_count:
+             type: integer
+    }
+
+student_ready:
+  description: Отметить готовность студента.
+  parameters:
+    - name: Token
+      in: header
+      description: 'room id'
+      required: true
+      schema:
+        type: string
+    - name: Room_id:
+       in: header
+       required: True
+       schema:
+         type: integer
+  data:
+    {
+      action: 'student_ready',
+      is_ready: 
+        type: boolean
+    }
+  response_to_room:
+    {
+      action: 'user_list'
+    }
+
+round_new:
+  description: Запуск раунда. В результате, у всех становятся видны сообщения прошлого раунда.
+  parameters:
+    - name: Token
+      in: header
+      description: 'room id'
+      required: true
+      schema:
+        type: string
+    - name: Room_id:
+       in: header
+       required: True
+       schema:
+         type: integer
+  data:
+    {
+      action: 'round_new'
+    }
+  response_to_room:
+    {
+      action: 'round_new'
+      message:
+        type: object
+        properties:
+          round_id:
+            type: integer
+          messages:
+            type: array
+            items:
+              nickname:
+                type: string
+              text:
+                type: string
+    }
+    
+message_send:
+  description: Отправка сообщения. В результате, у всех в комнате отобразится сообщение.
+  parameters:
+    - name: Token
+      in: header
+      description: 'room id'
+      required: true
+      schema:
+        type: string
+    - name: Room_id:
+       in: header
+       required: True
+       schema:
+         type: integer
+  data:
+    {
+      action: 'message_send'
+      message:
+        type: string
+    }
+  response_to_room:
+    {
+      action: 'message_send'
+      message:
+      	type: object
+      	properties:
+      	  nickname: 
+      	   type: string
+      	  text:
+      	    type: string
+      	  message_id:
+      	    type: integer
+    }
+    
+message_select:
+  description: Выбор правильных вариантов ответа тренером.
+  parameters:
+    - name: Token
+      in: header
+      description: 'room id'
+      required: true
+      schema:
+        type: string
+    - name: Room_id:
+       in: header
+       required: True
+       schema:
+         type: integer
+  data:
+    {
+      action: 'message_select'
+    }
+  response_to_room:
+    {
+      action: 'message_select'
+    }
+
+student_kick:
+  description: Удаление студента из комнаты
+  parameters:
+    - name: Token
+      in: header
+      description: 'room id'
+      required: true
+      schema:
+        type: string
+    - name: Room_id:
+       in: header
+       required: True
+       schema:
+         type: integer
+  data:
+    {
+      action: 'student_kick',
+      id:
+        type: integer
+    }
+  response_to_room:
+    {
+      action: 'user_list'
+    }
+    
+    
+users_list:
+  description: Список участников чата
+  parameters:
+    - name: Token
+      in: header
+      description: 'room id'
+      required: true
+      schema:
+        type: string
+    - name: Room_id:
+       in: header
+       required: True
+       schema:
+         type: integer
+  data:
+    {
+      action: 'users_list',
+    }
+  response_to_user:
+    {
+      action: 'users_list',
+      message: 
+      	type: array
+      	items:
+      	  nickname: 
+      	    type: string
+    }
+  
+room_info:
+  description: Информация о комнате
+  parameters:
+    - name: Token
+      in: header
+      description: 'room id'
+      required: true
+      schema:
+        type: string
+    - name: Room_id:
+       in: header
+       required: True
+       schema:
+         type: integer
+  data:
+    {
+      action: 'room_info',
+    }
+  response_to_user:
+    {
+    action: 'room_info',
+      message: 
+        type: object
+        properties:
+      	  connection_uuid: 
+      	    type: string
+      	  max_students_count: 
+            type: integer
+          max_rounds_count:
+            type: integer
+          max_round_time:
+            type: integer
+          is_started:
+            type: boolean
+          is_finished:
+            type: boolean
+          trainer:
+            type: integer
+    }  
+

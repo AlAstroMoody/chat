@@ -1,0 +1,328 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/AlAstroMoody/hr-chat/1.0.0
+info:
+  description: API for hr-chat
+  version: '1.0.0'
+  title: Simple HR API
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+paths:
+  /api/auth/trainer/:
+    post:
+      tags:
+        - auth
+      summary: autorization trainer
+      description: 'authorization of the trainer to create a chat room'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                  example: 'my_name'
+                password:
+                  type: string
+                  example: 't0p_secRet'
+      responses:
+        '200':
+          description: 'Успешная авторизация'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    example: 'your_name'
+                  role:
+                    type: string
+                    example: 'trainer'
+                  refresh:
+                    type: string
+                    example: 'b08f86af-35da-48f2-8fab-cef3904660bd'
+                  access:
+                    type: string
+                    example: '348f86af-dff3-33f3-8fab-cef39fd60bd'
+        '400':
+          description: 'Неверный логин или пароль'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: 'Неверный логин или пароль'
+  /api/auth/trainer/refresh/:
+    post:
+      tags:
+      - auth
+      summary: Refresh Token
+      description: Refresh an old token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refresh]
+              properties:
+                refresh:
+                  type: string
+                  example: 'b08f86af-35da-48f2-8fab-cef3904660bd'
+      responses:
+        200:
+          description: 'refresh token'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access:
+                    type: string
+                    example: '348f86af-dff3-33f3-8fab-cef39fd60bd'
+        400:
+          description: 'Некорректный запрос'
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  refresh:
+                    type: string
+                    example: 'Это поле обязательно.'
+        401:
+          description: 'Неверный токен'
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  refresh:
+                    type: string
+                    example: 'Неверный токен'
+  /api/auth/student/:
+    post:
+      tags:
+        - auth
+      summary: Autorization student
+      description: 'student authorization to enter the room'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nickname, connection_uuid]
+              properties:
+                nickname:
+                  type: string
+                  example: 'Blinchik_181'
+                connection_uuid:
+                  type: string
+                  example: '01234567-89ab-cdef-0123-456789abcdef'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nickname:
+                    type: string
+                    example: 'your_name'
+                  role:
+                    type: string
+                    example: 'stident'
+                  access:
+                    type: string
+                    example: 'b08f86af-35da-48f2-8fab-cef3904660bd'
+                  connection_uuid:
+                    type: string
+                    example: '01234567-89ab-cdef-0123-456789abcdef'
+        '400':
+          description: 'Такой никнейм уже используется'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: 'Такой никнейм уже используется'
+        '404':
+          description: 'Неправильный ID комнаты'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: 'Неправильный ID комнаты'
+        # в ТЗ есть варианты: 'Неправильный ID комнаты', 'Такой никнейм уже используется', 
+        # 'Тренинг уже начался', 'Тренинг закончился', 'Вас удалили из комнаты'
+  /api/auth/me/:
+    get:
+      tags:
+        - auth
+      responses:
+        '200':
+          description: 'information about user'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    example: 'Blinchik_181'
+                  role:
+                    type: string
+                    example: 'student'
+                  connection_uuid:
+                    type: string
+                    example: '01234567-89ab-cdef-0123-456789abcdef'
+        '401':
+          description: 'Необходима авторизация'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: 'Необходима авторизация'
+  /api/rooms/:
+    post:
+      tags:
+        - rooms
+      summary: Creating a room
+      description: 'create training room'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                max_round_time:
+                  type: integer
+                  minimum: 10
+                  maximum: 120
+                  example: 20
+                max_rounds_count:
+                  type: integer
+                  minimum: 1
+                  example: 10
+                max_students_count:
+                  type: integer
+                  minimum: 2
+                  example: 10
+      responses:
+        '201':
+          description: 'Комната создана'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  connection_uuid:
+                    type: string
+                    example: '01234567-89ab-cdef-0123-456789abcdef'
+                  max_round_time:
+                    type: integer
+                    example: '120'
+                  max_rounds_count:
+                    type: integer
+                    example: '10'
+                  max_students_count:
+                    type: integer
+                    example: '15'
+        '400':
+          description: 'Неверный запрос'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: 'Неверный запрос'
+        '401':
+          description: 'Авторизуйтесь как тренер'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: 'Авторизуйтесь как тренер'
+        '403':
+          description: 'Нет прав для создания комнаты'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: 'Нет прав для создания комнаты'
+  /api/rooms/{connection_uuid}/report/:
+    get:
+      tags:
+        - rooms
+      summary: Report
+      description: 'Generating a report'
+      parameters:
+        - name: connection_uuid
+          in: path
+          description: 'room id'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Отчёт по тренингу'
+          content:
+            application/vnd.ms-excel:
+              schema:
+                type: string
+                example: 'тут на самом деле пример файла XLS'
+        '400':
+          description: 'Тренинг не окончен'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: 'Тренинг не окончен'
+        '403':
+          description: 'Недостаточно прав'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: 'Недостаточно прав'
+        '404':
+          description: 'Комната не существует'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: 'Комната не существует'

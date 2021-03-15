@@ -1,0 +1,41 @@
+Django==3.1.1
+psycopg2-binary==2.8.5
+djangorestframework==3.11.0 # для создания api
+djangorestframework-simplejwt==4.6.0 # для авторизации по jwt
+channels==2.4.0 # для асинхронной работы и WebSocket-ов
+channels-redis==3.1.0 # для отдельных слоев
+redis==3.5.3 # для работы с redis
+django-redis==4.12.1 # для работы с кешем в django
+openpyxl==3.0.4 # для работы с XLS файлами
+factory_boy==2.12.0 # для генерации данных в тестах
+dj-database-url==0.5.0
+gunicorn==19.9.0
+celery==4.4.7
+ipdb==0.11 # отладка программ
+ipython==7.5.0 # приятная работа в shell
+django-constance==2.6.0 # динамичные переменые
+django-picklefield==2.0 # использование constance через админку
+django-admin-sortable2==0.7.1 # удобная сортировка для админки
+django-des==2.4.1 # динамические настройки почты
+Pillow==7.2.0 # для работы с изображениями
+django-debug-toolbar==2.2 # панель для отладки запросов в бд
+
+pytest-django==3.5.1 # плагин к pytest для тестирование django
+pytest-asyncio==0.10.0 # плагин к pytest для тестирование asyncio
+asynctest==0.13.0 # надстройка над unittest для тестирования асинхронных библиотек
+
+pep8-naming==0.11.1 # check naming for pep8 conventions
+flake8==3.8.3 # linting
+flake8-import-order==0.18.1 # import order
+flake8-blind-except==0.1.1 # restrict exceptions without specifying error type
+flake8-builtins==1.5.3 # check name collisions with builtins
+flake8-broken-line==0.2.1 # restrict using backslashes to break line
+flake8-commas==2.0.0 # enforce using trailing commas
+flake8-eradicate==0.4.0 # restrict commented (dead) code
+flake8-print==3.1.4 # find print statements
+flake8-quotes==3.2.0 # enforce using one type of quotes
+flake8-cognitive-complexity==0.1.0 # check cognitive complexity of expressions
+flake8-bugbear==20.1.4 # check for potential bugs
+pylint==2.5.3 # pylint
+
+git+https://github.com/SibdevPro/django-hash-static.git@1.0.2 # хэширование статики
